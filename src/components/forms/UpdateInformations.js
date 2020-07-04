@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import moment from 'moment'
 import timezone from 'moment-timezone'
+import swal from 'sweetalert'
 
 const UpdateInformations = (props) => {
 
@@ -29,8 +30,6 @@ const UpdateInformations = (props) => {
 
                 const currentDate = moment().tz('America/Manaus').format('HH:mm')
 
-                    console.log(originalInformations)
-
                 if (originalInformations.fasting != informations.fasting){
                     informations.updateFasting = currentDate
                 }
@@ -55,7 +54,7 @@ const UpdateInformations = (props) => {
                     informations.updateAfterDinner = currentDate
                 }
 
-                informations.fasting = Number(informations.fasting ?? 0)
+                informations.fasting        = Number(informations.fasting ?? 0)
                 informations.afterBreakfast = Number(informations.afterBreakfast ?? 0)
                 informations.beforeLunch    = Number(informations.beforeLunch ?? 0)
                 informations.afterLunch     = Number(informations.afterLunch ?? 0)

@@ -1,6 +1,7 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import moment from 'moment'
 import timezone from 'moment-timezone'
+import swal from 'sweetalert'
 
 const AddInformations = (props) => {
 
@@ -17,8 +18,11 @@ const AddInformations = (props) => {
                                 beforeDinner: '', 
                                 updateBeforeDinner: '',
                                 afterDinner: '',
-                                updateAfterDinner: ''
+                                updateAfterDinner: '',
+                                
                             }
+
+    const [ disabledBtnAdd, setDisabledBtnAdd ] = useState(false)
 
     const [informations, setInformations] = useState(initialFormState)
 
@@ -31,47 +35,64 @@ const AddInformations = (props) => {
 
             <form
 
-                onSubmit={(event) => {
+                onSubmit={ (event) => {
 
                 event.preventDefault()
 
                 if (!informations.data) {
-                    alert("Informe a data")
+                    swal('Informe uma data')
                     return
                 }
 
                 const dataUTC = moment(new Date(`${informations.data}`), 'aaaa-mm-dd').utc().format('DD/MM/YYYY')
 
                 if (dataUTC === 'Invalid date'){
-                    alert('Data inválida')
+                    swal('Oops','Data inválida', 'error')
                     return
                 }
 
-                informations.fasting        = Number(informations.fasting ?? 0)
-                informations.afterBreakfast = Number(informations.afterBreakfast ?? 0)
-                informations.beforeLunch    = Number(informations.beforeLunch ?? 0)
-                informations.afterLunch     = Number(informations.afterLunch ?? 0)
-                informations.beforeDinner   = Number(informations.beforeDinner ?? 0)
-                informations.afterDinner    = Number(informations.afterDinner ?? 0)
+                setDisabledBtnAdd(true)
 
-                const currentDate = moment().tz('America/Manaus').format('HH:mm')
+                try{
+                    
+                    informations.fasting        = Number(informations.fasting ?? 0)
+                    informations.afterBreakfast = Number(informations.afterBreakfast ?? 0)
+                    informations.beforeLunch    = Number(informations.beforeLunch ?? 0)
+                    informations.afterLunch     = Number(informations.afterLunch ?? 0)
+                    informations.beforeDinner   = Number(informations.beforeDinner ?? 0)
+                    informations.afterDinner    = Number(informations.afterDinner ?? 0)
+    
+                    const currentDate = moment().tz('America/Manaus').format('HH:mm')
+    
+                    informations.updateFasting = currentDate
+                    informations.updateAfterBreakfast = currentDate
+                    informations.updateBeforeLunch = currentDate
+                    informations.updateAfterLunch = currentDate
+                    informations.updateBeforeDinner = currentDate
+                    informations.updateAfterDinner = currentDate
+    
+                    informations.data = dataUTC
+    
+                    props.addInformation(informations)
+                        .then(response => {
+    
+                        const { status, message } = response
+    
+                        if (status){
+                            swal('Sucesso!', message, 'success')
+                            setInformations(initialFormState)
+                        }else{
+                            swal('Oops!', message, 'error')
+                        }
 
-                informations.updateFasting = currentDate
-                informations.updateAfterBreakfast = currentDate
-                informations.updateBeforeLunch = currentDate
-                informations.updateAfterLunch = currentDate
-                informations.updateBeforeDinner = currentDate
-                informations.updateAfterDinner = currentDate
+                        setDisabledBtnAdd(false)
+                    })
 
-                informations.data = dataUTC
-
-                const {status, message} = props.addInformation(informations)
-
-                if (status){
+                }catch(error){
                     setInformations(initialFormState)
+
+                    setDisabledBtnAdd(false)
                 }
-                
-                alert(message)
             }}
             >
         
@@ -143,7 +164,7 @@ const AddInformations = (props) => {
                 onChange={handleInputChange}
             />
 
-            <button className="btn">Adicionar</button>
+            <button className="btn" disabled={disabledBtnAdd}>Adicionar</button>
         
         </form>
     )

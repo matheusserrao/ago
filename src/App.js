@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import moment from 'moment'
+import axios from 'axios'
+import swal from 'sweetalert'
+
 import HistoryTable from './components/tables/HistoryTable'
 
 import './index.css'
@@ -8,19 +11,66 @@ import UpdateInformations from './components/forms/UpdateInformations'
 
 const App = () => {
 
-  const informationsData = [
-     { id: 1, data: '20/06/2020', fasting: 80, afterBreakfast: 100, beforeLunch: 110, afterLunch: 120, beforeDinner: 80, afterDinner: 100 },
-     { id: 2, data: '21/06/2020', fasting: 90, afterBreakfast: 95, beforeLunch: 110, afterLunch: 120, beforeDinner: 80, afterDinner: 100 },
-     
-  ]
+  const [informations, setInformations] = useState([])
 
-  const [informations, setInformations] = useState(informationsData)
+  const loadHistory = async () => {
+    const informationsData = await axios
+    .get('https://ago-backend.herokuapp.com/daily')
+    .then(response => {
+       console.log(response)
+       return response.data
+    })
+    .catch(error => {
+      console.log(error)
+      return []
+    })
 
-  const deleteInformation = (id) => { 
-    setInformations(informations.filter( info => info.id != id))
+    setInformations(informationsData)
   }
 
-  const addInformation = (information) => {
+  useEffect(() => {
+    loadHistory()
+  }, [])
+
+  const deleteInformation = (id) => { 
+    //setInformations(informations.filter( info => info._id != id))
+
+    if (!id){
+      swal('Oops', 'ID é inválido', 'error')
+      return
+    }
+
+    swal({
+      title: 'Tem certeza?',
+      text: 'Uma vez deletado, você perderá esta informação.',
+      icon: 'warning',
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+
+      if (willDelete) {
+
+        axios.delete(`https://ago-backend.herokuapp.com/daily/${id}`).then(response => {
+
+          console.log('response delete', response)
+
+          loadHistory()
+
+          swal('Deletado com sucesso!', {
+            icon: "success",
+          })
+
+        })
+       
+      } else {
+        swal('Cancelado')
+      }
+    })
+
+  }
+
+  const addInformation = async(information) => {
 
       const found = informations.find(i => {
         return i.data == information.data
@@ -30,24 +80,28 @@ const App = () => {
         return { status: false, message: 'Data já lançada'}
       }
 
-      try {
-        
-         information['id'] = informations.length + 1
-
+        /*
           const infos = [...informations, information]
 
           const orded = infos.sort((a,b) => {
             return moment(b.data, 'DD/MM/YYYY').diff( moment(a.data, 'DD/MM/YYYY') )
           })
 
-          setInformations(orded)
-        
-          return {status: true, message: 'Sucesso'}
+          setInformations(orded)*/
 
-      } catch (error) {
-        console.log(error)
-        return {status: false, message: error.message}
-      }
+      const response = await axios
+                  .post('https://ago-backend.herokuapp.com/daily', {...information})
+                  .then(response => {
+                        loadHistory()
+                        return {status: true, message: 'Sucesso'}
+                  })
+                  .catch(error => {
+                    const obj = {error}
+                    return {status: false, message: obj.error.response.data}
+
+                  })
+
+      return response
   }
 
   const updateInformations =(id, newInformations) => {
@@ -70,7 +124,6 @@ const App = () => {
       setEditing(false)
       setCurrentInfo({ data: '', fasting: '', afterBreakfast: '', beforeLunch: '', afterLunch: '', beforeLunch: '', beforeDinner: '', afterDinner: '' })
     }
-
   }
 
   return (

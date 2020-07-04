@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import SweetAlert from 'react-bootstrap-sweetalert';
 import moment from 'moment'
+import swal from 'sweetalert'
 
 const HistoryTable = (props) => {
 
-    const [alertRemove, setAlertRemove] = useState(false)
     const [idSelected, setIdSelected] = useState(-1)
 
     return ((
@@ -24,12 +23,10 @@ const HistoryTable = (props) => {
             </thead>
             <tbody>
 
-               
-    
                 {props.informations.length ? (
                    props.informations.map((info) => (
                     
-                    <tr key={info.id} className={
+                    <tr key={info._id} className={
 
                         (moment(info.data, 'DD/MM/YYYY').isSame(new Date, 'day')) ? 
                         
@@ -37,7 +34,7 @@ const HistoryTable = (props) => {
                         :
                         ""
                      }>
-                        <td>{info.data}</td>
+                        <td>{info.dataFormmated}</td>
                       
                         <td><a href="#" title={info.updateFasting || '-'} className={"a-value " + (info.fasting <= 110 ? "td-good" : (info.fasting >= 111 && info.fasting <= 200) ? "td-attention": "td-danger")}>{info.fasting}</a></td>
                         <td><a href="#" title={info.updateAfterBreakfast || '-'} className={"a-value " + (info.afterBreakfast <= 110 ? "td-good" : (info.afterBreakfast >= 111 && info.afterBreakfast <= 200) ? "td-attention": "td-danger")}>{info.afterBreakfast}</a></td>
@@ -56,9 +53,8 @@ const HistoryTable = (props) => {
                             </button>
                             <button
                                  onClick={() => {
-                                    setIdSelected(info.id)
-                                    setAlertRemove(true)
-                                    props.deleteInformation(info.id)
+                                    setIdSelected(info._id)
+                                    props.deleteInformation(info._id)
                                  }}
                                  className="button muted-button"
                              >            
@@ -83,51 +79,51 @@ const HistoryTable = (props) => {
                      <th>
                         {
                             
-                            Number(props.informations.reduce((counter, current) => counter + current.fasting, 0) / props.informations.reduce((counter, current) => {
+                            parseInt(Number(props.informations.reduce((counter, current) => counter + current.fasting, 0) / props.informations.reduce((counter, current) => {
                                 if (current.fasting >= 0)
                                    return counter + 1
-                            }, 0)).toFixed(2)
+                            }, 0)) || 0)
                             
                         }
                     </th>
                     <th>
                         {
-                            Number(props.informations.reduce((counter, current) => counter + current.afterBreakfast, 0) / (props.informations.reduce((counter, current) => {
+                            parseInt(Number(props.informations.reduce((counter, current) => counter + current.afterBreakfast, 0) / (props.informations.reduce((counter, current) => {
                                 if (current.afterBreakfast >= 0)
                                    return counter + 1
-                            }, 0)).toFixed(2) )
+                            }, 0))) || 0)
                         }
                     </th>
                     <th>
                         {
-                            Number(props.informations.reduce((counter, current) => counter + current.beforeLunch, 0)  / props.informations.reduce((counter, current) => {
+                            parseInt(Number(props.informations.reduce((counter, current) => counter + current.beforeLunch, 0)  / props.informations.reduce((counter, current) => {
                                 if (current.beforeLunch >= 0)
                                    return counter + 1
-                            }, 0)).toFixed(2)
+                            }, 0)) || 0)
                         }
                     </th>
                     <th>
                         {
-                            Number(props.informations.reduce((counter, current) => counter + current.afterLunch, 0)  / props.informations.reduce((counter, current) => {
+                            parseInt(Number(props.informations.reduce((counter, current) => counter + current.afterLunch, 0)  / props.informations.reduce((counter, current) => {
                                 if (current.afterLunch >= 0)
                                    return counter + 1
-                            }, 0)).toFixed(2)
+                            }, 0)) || 0)
                         }
                     </th>
                     <th>
                         {
-                            Number(props.informations.reduce((counter, current) => counter + current.beforeDinner, 0)  / props.informations.reduce((counter, current) => {
+                            parseInt(Number(props.informations.reduce((counter, current) => counter + current.beforeDinner, 0)  / props.informations.reduce((counter, current) => {
                                 if (current.beforeDinner >= 0)
                                    return counter + 1
-                            }, 0)).toFixed(2)
+                            }, 0)) || 0)
                         }
                     </th>
                     <th>
                         {
-                            Number(props.informations.reduce((counter, current) => counter + current.afterDinner, 0)  / props.informations.reduce((counter, current) => {
+                            parseInt(Number(props.informations.reduce((counter, current) => counter + current.afterDinner, 0)  / props.informations.reduce((counter, current) => {
                                 if (current.afterDinner >= 0)
                                    return counter + 1
-                            }, 0)).toFixed(2)
+                            }, 0)) || 0)
                         }
                     </th> 
                      
