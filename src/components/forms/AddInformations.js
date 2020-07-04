@@ -65,8 +65,6 @@ const AddInformations = (props) => {
 
                 informations.data = dataUTC
 
-            //    console.log(dataFormmated.format('DD/MM/YYYY'))
-
                 const {status, message} = props.addInformation(informations)
 
                 if (status){
