@@ -8,12 +8,12 @@ import Login from './components/pages/Login/Login'
 
 const PageNotFound = () => <h1>Página não encontrada</h1>
 
+// <Route exact path="/" component={Login}></Route>
 
 const routing = (
     <Router>
         <Switch>
-            <Route exact path="/" component={Login}></Route>
-            <Route exect path="/home" component={Daily}></Route>
+            <Route exect path="/" component={Daily}></Route>
             <Route component={PageNotFound}></Route>
         </Switch>
     </Router>
