@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
+import './home.css'
+
 import moment from 'moment'
 import axios from 'axios'
 import swal from 'sweetalert'
 
-import HistoryTable from './components/tables/HistoryTable'
+import HistoryTable from '../../tables/HistoryTable'
+import Pagination from '../../pagination'
 
-import './index.css'
-import AddInformations from './components/forms/AddInformations'
-import UpdateInformations from './components/forms/UpdateInformations'
+import AddInformations from '../../forms/AddInformations'
+import UpdateInformations from '../../forms/UpdateInformations'
 
-const App = () => {
+const Daily = () => {
 
   const [informations, setInformations] = useState([])
 
@@ -104,12 +106,26 @@ const App = () => {
       return response
   }
 
-  const updateInformations =(id, newInformations) => {
-
-    setEditing(false)
+  const updateInformations = async (id, newInformations) => {
+   
+    /*
     setInformations(informations.map( (info) => {
         return (info.id === id ? newInformations : info )
-    }))
+    }))*/
+
+    await axios
+            .patch(`https://ago-backend.herokuapp.com/daily/${id}`, newInformations)
+            .then(response => {
+              swal('Sucesso', 'Alterações salvas com sucesso', 'success')
+              setEditing(false)
+              loadHistory()
+            })
+            .catch(error => {
+              console.log(error)
+              swal('Oops', 'Ocorreu um error ao atualizar', 'error')
+
+            })
+    
   }
 
   const [editing, setEditing] = useState(false)
@@ -141,9 +157,10 @@ const App = () => {
 
           </div>
           
-       <div className="flex-large" >
+       <div className="flex-large">
           <h4>Histórico</h4>
           <HistoryTable informations={informations} deleteInformation={deleteInformation} editRow={editRow}/>
+          
         </div>
 
       </div>
@@ -154,4 +171,4 @@ const App = () => {
   )
 }
 
-export default App
+export default Daily

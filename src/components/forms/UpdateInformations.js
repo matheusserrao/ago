@@ -28,7 +28,7 @@ const UpdateInformations = (props) => {
 
                 event.preventDefault()
 
-                const currentDate = moment().tz('America/Manaus').format('HH:mm')
+                const currentDate = moment().tz('America/Manaus')._d
 
                 if (originalInformations.fasting != informations.fasting){
                     informations.updateFasting = currentDate
@@ -61,7 +61,7 @@ const UpdateInformations = (props) => {
                 informations.beforeDinner   = Number(informations.beforeDinner ?? 0)
                 informations.afterDinner    = Number(informations.afterDinner ?? 0)
 
-                props.updateInformations(informations.id, informations)
+                props.updateInformations(informations._id, informations)
             }}
             >
         
@@ -125,11 +125,11 @@ const UpdateInformations = (props) => {
             <div className="">
                   <button className="btn">Salvar alterações</button>
                   <button
-                    className="btn"
-                    onClick={() => {
-                        props.setEditing(false)
-                    }}
-                  >
+                        className="btn"
+                        onClick={() => {
+                            props.setEditing(false)
+                        }}
+                        >
                       Cancelar alterações
                   </button>
               </div>

@@ -394,6 +394,11 @@ table {
   margin: 0 0 1.5rem 0;
 }
 
+header
+ {
+      position: fixed;
+ }
+
 ul li ul {
   margin-bottom: 0;
 }
