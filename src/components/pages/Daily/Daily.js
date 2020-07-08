@@ -6,26 +6,36 @@ import axios from 'axios'
 import swal from 'sweetalert'
 
 import HistoryTable from '../../tables/HistoryTable'
-import Pagination from '../../pagination'
-
 import AddInformations from '../../forms/AddInformations'
 import UpdateInformations from '../../forms/UpdateInformations'
+import FilterDate from '../../forms/FilterDate'
 
 const Daily = () => {
 
   const [informations, setInformations] = useState([])
 
   const loadHistory = async () => {
+
+    const today = moment()
+
+    const startDate = today.clone().subtract('days', 10).format('DD/MM/YYYY')
+    const endDate = today.format('DD/MM/YYYY')
+    
+    //https://ago-backend.herokuapp.com/daily
     const informationsData = await axios
-    .get('https://ago-backend.herokuapp.com/daily')
-    .then(response => {
-       console.log(response)
-       return response.data
-    })
-    .catch(error => {
-      console.log(error)
-      return []
-    })
+                                    .get(`https://ago-backend.herokuapp.com/daily`, {
+                                      params: {
+                                        startDate,
+                                        endDate
+                                      }
+                                    })
+                                    .then(response => {
+                                      return response.data
+                                    })
+                                    .catch(error => {
+                                      console.log(error)
+                                      return []
+                                    })
 
     setInformations(informationsData)
   }
@@ -35,7 +45,6 @@ const Daily = () => {
   }, [])
 
   const deleteInformation = (id) => { 
-    //setInformations(informations.filter( info => info._id != id))
 
     if (!id){
       swal('Oops', 'ID é inválido', 'error')
@@ -54,8 +63,6 @@ const Daily = () => {
       if (willDelete) {
 
         axios.delete(`https://ago-backend.herokuapp.com/daily/${id}`).then(response => {
-
-          console.log('response delete', response)
 
           loadHistory()
 
@@ -82,15 +89,6 @@ const Daily = () => {
         return { status: false, message: 'Data já lançada'}
       }
 
-        /*
-          const infos = [...informations, information]
-
-          const orded = infos.sort((a,b) => {
-            return moment(b.data, 'DD/MM/YYYY').diff( moment(a.data, 'DD/MM/YYYY') )
-          })
-
-          setInformations(orded)*/
-
       const response = await axios
                   .post('https://ago-backend.herokuapp.com/daily', {...information})
                   .then(response => {
@@ -107,11 +105,6 @@ const Daily = () => {
   }
 
   const updateInformations = async (id, newInformations) => {
-   
-    /*
-    setInformations(informations.map( (info) => {
-        return (info.id === id ? newInformations : info )
-    }))*/
 
     await axios
             .patch(`https://ago-backend.herokuapp.com/daily/${id}`, newInformations)
@@ -131,6 +124,7 @@ const Daily = () => {
   const [editing, setEditing] = useState(false)
   const initialFormState = { data: '', fasting: '', afterBreakfast: '', beforeLunch: '', afterLunch: '', beforeLunch: '', beforeDinner: '', afterDinner: '' }
   const [currentInfo, setCurrentInfo] = useState(initialFormState)
+
 
   const editRow = (informations = {}, value) => {
     if (value){
@@ -158,7 +152,8 @@ const Daily = () => {
           </div>
           
        <div className="flex-large">
-          <h4>Histórico</h4>
+          <h3 style={{textAlign: 'center', marginTop: 0}}>Histórico</h3>
+          <FilterDate setInformations={setInformations}/>
           <HistoryTable informations={informations} deleteInformation={deleteInformation} editRow={editRow}/>
           
         </div>

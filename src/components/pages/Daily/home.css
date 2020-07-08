@@ -91,6 +91,17 @@ a {
   width: 100%;
 }
 
+.filterDate{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.container-filterDate{
+
+  width: 50%;
+  align-items: center;
+}
+
 /**
  * 1. Remove the bottom border in Chrome 57-
  * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
